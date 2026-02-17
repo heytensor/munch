@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Munch Search</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
+<style>
+
+/* ---------- ROOT ---------- */
+
+:root{
+
+--accent:#3b82f6;
+--bg:#0f172a;
+--card:#020617;
+--card2:#1e293b;
+
+}
+
+*{
+
+box-sizing:border-box;
+font-family:'Varela Round';
+
+
+}
+
+/* ---------- BODY ---------- */
+
+body{
+
+margin:0;
+background:var(--bg);
+color:white;
+display:flex;
+height:100vh;
+overflow:hidden;
+
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar{
+
+width:400x;
+background:black;
+padding:20px;
+
+}
+
+.title{
+    padding:12px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
+    cursor:pointer;
+    border-radius:10px;
+}
+
+.tab{
+
+font-size:40px;
+font-weight:1200;
+color:white;
+padding:12px;
+cursor:pointer;
+border-radius:10px;
+
+}
+
+.tab:hover{
+
+background:var(--card2);
+
+}
+
+/* ---------- MAIN ---------- */
+
+p {
+    font-size:36px;
+    font-weight:500;
+    color:white;
+    padding:12px;
+    cursor:pointer;
+    border-radius:10px;
+}
+
+h2 {
+    font-size:36px;
+    font-weight:500;
+    color:white;
+    padding:12px;
+    cursor:pointer;
+    border-radius:10px;
+}
+
+.main{
+
+flex:1;
+overflow:auto;
+padding:20px;
+
+scroll-behavior:smooth;
+
+}
+
+/* ---------- BOUNCE SCROLL ---------- */
+
+.main{
+
+animation:fade .6s cubic-bezier(.34,1.56,.64,1);
+
+}
+
+@keyframes fade{
+
+0%{
+
+opacity:0;
+transform:translateY(30px);
+
+}
+
+100%{
+
+opacity:1;
+transform:translateY(0);
+
+}
+
+}
+
+/* ---------- SEARCH ---------- */
+
+input,select{
+
+font-size:36px;
+font-weight:500;
+padding:10px;
+background:var(--card2);
+border:none;
+color:white;
+border-radius:10px;
+
+}
+
+button{
+
+font-size:36px;
+font-weight:500;
+padding:10px;
+background:var(--accent);
+border:none;
+border-radius:10px;
+color:white;
+cursor:pointer;
+
+}
+
+/* ---------- GRID ---------- */
+
+.grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:20px;
+
+}
+
+/* ---------- CARD ---------- */
+
+.card{
+
+background:var(--card);
+padding:15px;
+border-radius:16px;
+transition:.3s;
+
+animation:fade .5s;
+
+}
+
+.card:hover{
+
+transform:translateY(-8px);
+
+}
+
+.card img{
+
+width:100%;
+border-radius:10px;
+
+}
+
+/* ---------- ACTIONS ---------- */
+
+.actions{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:10px;
+
+}
+
+/* ---------- HEART ---------- */
+
+.heart{
+
+font-size:24px;
+cursor:pointer;
+transition:.3s;
+
+}
+
+.heart:hover{
+
+transform:scale(1.3);
+
+}
+
+.filled{
+
+color:red;
+animation:pop .3s;
+
+}
+
+@keyframes pop{
+
+0%{transform:scale(.5);}
+100%{transform:scale(1);}
+
+}
+
+/* ---------- DELETE ---------- */
+
+.delete{
+
+cursor:pointer;
+color:red;
+
+}
+
+/* ---------- TRACKER ---------- */
+
+.entry{
+
+background:var(--card);
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+
+display:flex;
+justify-content:space-between;
+
+}
+
+/* ---------- PROGRESS BAR ---------- */
+
+.bar{
+
+background:#333;
+height:20px;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+
+}
+
+.fill{
+
+height:100%;
+background:lime;
+width:0%;
+transition:width 1s cubic-bezier(.34,1.56,.64,1);
+
+}
+
+/* ---------- HEATMAP ---------- */
+
+.heat{
+
+width:18px;
+height:18px;
+display:inline-block;
+margin:2px;
+border-radius:4px;
+
+}
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+body{
+
+flex-direction:column;
+
+}
+
+.sidebar{
+
+display:flex;
+width:100%;
+
+}
+
+.tab{
+
+flex:1;
+text-align:center;
+
+}
+
+}
+
+</style>
+</head>
+<body>
+
+
+<div class="sidebar">
+<img class="title" src="lib/munch.png" alt="munch" style="width:320px;height:90x;">
+<br>
+<br>
+<div class="tab" onclick="showTab('search')">Search</div>
+
+<div class="tab" onclick="showTab('tracker')">Tracker</div>
+
+<div class="tab" onclick="showTab('favorites')">Favorites</div>
+
+<div class="tab" onclick="showTab('about')">About</div>
+
+</div>
+
+
+<div class="main">
+
+
+<!-- SEARCH -->
+
+<div id="searchTab">
+
+<h2>Search</h2>
+
+<input id="foodInput">
+
+<button onclick="searchFood()">Search</button>
+
+<div id="results" class="grid"></div>
+
+</div>
+
+
+<!-- TRACKER -->
+
+<div id="trackerTab" style="display:none">
+
+<h2>Tracker</h2>
+
+<input type="date" id="datePicker">
+
+<div id="entries"></div>
+
+<h3 id="total"></h3>
+<br>
+<br>
+
+<div class="bar">
+
+<div class="fill" id="progress"></div>
+
+</div>
+
+<br>
+<br>
+<br>
+
+<h2>Goal</h2>
+
+<input id="goalInput" type="number">
+
+<select id="goalType">
+
+<option value="under">Under</option>
+
+<option value="over">Over</option>
+
+</select>
+
+<button onclick="saveGoal()">Save</button>
+
+<br>
+<br>
+<br>
+
+<div id="heatmap"></div>
+
+</div>
+
+
+<!-- FAVORITES -->
+
+<div id="favoritesTab" style="display:none">
+
+<h2>Favorites</h2>
+
+<div id="favGrid" class="grid"></div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div id="aboutTab" style="display:none">
+
+<p>Munch is a simple nutritional search engine. It is built using the OpenFoodFacts API.</p>
+<button onclick="window.open('https://world.openfoodfacts.org/', '_blank')">OpenFoodFacts</button>
+<p>Created by tensor.</p>
+<p>Source code at https://github.com/heytensor/munch</p>
+<button onclick="window.open('https://github.com/heytensor/munch', '_blank')">View Source Code</button>   
+</div>
+
+
+</div>
+
+
+
+<script>
+
+/* ---------- STORAGE ---------- */
+
+let favorites=JSON.parse(localStorage.favorites||"[]");
+
+let tracker=JSON.parse(localStorage.tracker||"{}");
+
+let goal=JSON.parse(localStorage.goal||'{"value":2000,"type":"under"}');
+
+function save(){
+
+localStorage.favorites=JSON.stringify(favorites);
+localStorage.tracker=JSON.stringify(tracker);
+localStorage.goal=JSON.stringify(goal);
+
+}
+
+/* ---------- TAB ---------- */
+
+function showTab(tab){
+
+searchTab.style.display="none";
+trackerTab.style.display="none";
+favoritesTab.style.display="none";
+aboutTab.style.display="none";
+
+document.getElementById(tab+"Tab").style.display="block";
+
+renderFav();
+renderTracker();
+renderHeatmap();
+
+}
+
+/* ---------- FAVORITES ---------- */
+
+function toggleFav(p){
+
+if(favorites.some(x=>x.code==p.code))
+
+favorites=favorites.filter(x=>x.code!=p.code);
+
+else
+
+favorites.push(p);
+
+save();
+
+searchFood();
+renderFav();
+
+}
+
+function deleteFav(code){
+
+favorites=favorites.filter(x=>x.code!=code);
+
+save();
+
+renderFav();
+
+}
+
+/* ---------- CARD ---------- */
+
+function cardHTML(p){
+
+let kcal=p.nutriments?.["energy-kcal_100g"]||0;
+
+let fav=favorites.some(x=>x.code==p.code);
+
+return`
+
+<div class="card">
+
+<img src="${p.image_url||""}">
+
+${p.product_name}
+
+${kcal} kcal
+
+<div class="actions">
+
+<button onclick='addEntry(${JSON.stringify(p)})'>Track</button>
+
+<div>
+
+<span class="heart ${fav?"filled":""}"
+
+onclick='toggleFav(${JSON.stringify(p)})'>
+
+${fav?"♥":"♡"}
+
+</span>
+
+<span class="delete"
+
+onclick='deleteFav("${p.code}")'>
+
+❌
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+/* ---------- SEARCH ---------- */
+
+async function searchFood(){
+
+results.innerHTML="Searching...";
+
+let res=await fetch(
+
+`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${foodInput.value}&json=1&page_size=12&fields=code,product_name,image_url,nutriments`
+
+);
+
+let data=await res.json();
+
+results.innerHTML="";
+
+data.products.forEach(p=>{
+
+results.innerHTML+=cardHTML(p);
+
+});
+
+}
+
+/* ---------- FAVORITES ---------- */
+
+function renderFav(){
+
+favGrid.innerHTML="";
+
+favorites.forEach(p=>{
+
+favGrid.innerHTML+=cardHTML(p);
+
+});
+
+}
+
+/* ---------- TRACKER ---------- */
+
+datePicker.value=new Date().toISOString().split("T")[0];
+
+function addEntry(p){
+
+let d=datePicker.value;
+
+if(!tracker[d])tracker[d]=[];
+
+tracker[d].push(p);
+
+save();
+
+renderTracker();
+
+}
+
+function deleteEntry(date,index){
+
+tracker[date].splice(index,1);
+
+save();
+
+renderTracker();
+
+}
+
+function renderTracker(){
+
+let d=datePicker.value;
+
+entries.innerHTML="";
+
+let total=0;
+
+(tracker[d]||[]).forEach((p,i)=>{
+
+let kcal=p.nutriments?.["energy-kcal_100g"]||0;
+
+total+=kcal;
+
+entries.innerHTML+=`
+
+<div class="entry">
+
+${p.product_name}
+
+<span onclick="deleteEntry('${d}',${i})">
+
+❌
+
+</span>
+
+</div>
+
+`;
+
+});
+
+total.innerText=total+" kcal";
+
+let percent=(total/goal.value)*100;
+
+progress.style.width=Math.min(percent,100)+"%";
+
+}
+
+/* ---------- HEATMAP ---------- */
+
+function renderHeatmap(){
+
+heatmap.innerHTML="";
+
+Object.keys(tracker).forEach(d=>{
+
+let total=0;
+
+tracker[d].forEach(p=>{
+
+total+=p.nutriments?.["energy-kcal_100g"]||0;
+
+});
+
+heatmap.innerHTML+=
+
+`<div class="heat"
+
+style="background:${total<goal.value?"lime":"red"}">
+
+</div>`;
+
+});
+
+}
+
+/* ---------- GOAL ---------- */
+
+function saveGoal(){
+
+goal.value=goalInput.value;
+goal.type=goalType.value;
+
+save();
+
+renderTracker();
+
+}
+
+/* ---------- INIT ---------- */
+
+renderFav();
+renderTracker();
+renderHeatmap();
+
+</script>
+
+</body>
+</html>
